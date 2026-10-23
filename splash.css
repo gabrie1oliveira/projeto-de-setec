@@ -1,0 +1,266 @@
+/**
+ * ============================================================
+ * SPLASH.CSS
+ * ------------------------------------------------------------
+ * Estilos da tela de abertura (splash screen) embutida no
+ * index.html. Fica acima de #game-container via z-index e
+ * desaparece com fade quando o jogador entra no jogo.
+ * ============================================================
+ */
+
+/* Reset / base do overlay */
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    overflow: hidden;
+    background: #0D47A1; /* Fundo de segurança azul escuro */
+    font-family: 'Press Start 2P', monospace;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Vinheta cinematográfica nas bordas */
+#splash-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 40%,
+        rgba(0, 0, 0, 0.4) 100%
+    );
+    z-index: 1;
+}
+
+/* Canvas de parallax ocupa a tela inteira */
+#splash-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    z-index: 1;
+}
+
+/* Conteúdo HTML sobreposto ao canvas */
+#splash-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 20px;
+    text-align: center;
+    padding: 16px;
+}
+
+/* Título principal — bounce de entrada + float contínuo + glow */
+#splash-title {
+    font-size: clamp(32px, 6vw, 64px);
+    color: #FFD700;
+    text-shadow:
+        4px 4px 0 #D32F2F,
+        6px 6px 0 #7F0000,
+        0 0 30px rgba(255, 215, 0, 0.6);
+    animation:
+        titleBounce 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+        titleFloat 3s ease-in-out 0.8s infinite;
+    will-change: transform;
+    line-height: 1.2;
+}
+
+/* Subtítulo — fade in suave atrasado */
+#splash-subtitle {
+    font-size: clamp(14px, 2.5vw, 24px);
+    color: #4FC3F7;
+    text-shadow:
+        2px 2px 0 #000,
+        0 0 15px rgba(79, 195, 247, 0.8);
+    letter-spacing: 2px;
+    animation: subtitleFade 0.6s ease-out 0.5s backwards;
+}
+
+/* Botão ENTRAR — 3D com sombra real e brilho interno */
+#splash-start-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(16px, 2vw, 24px);
+    padding: 20px 48px;
+    background: linear-gradient(180deg, #E53935 0%, #B71C1C 100%);
+    color: #FFD700;
+    border: 4px solid #FFD700;
+    border-radius: 12px;
+    box-shadow:
+        0 6px 0 #7F0000,
+        0 8px 20px rgba(255, 215, 0, 0.4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease;
+    animation:
+        buttonPulse 1.5s ease-in-out infinite,
+        buttonEnter 0.6s ease-out 1s backwards;
+    will-change: transform, box-shadow;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    outline: none;
+}
+
+#splash-start-btn .btn-icon {
+    font-size: 18px;
+}
+
+#splash-start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 0 #7F0000,
+        0 12px 30px rgba(255, 215, 0, 0.7),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+#splash-start-btn:active {
+    transform: translateY(4px);
+    box-shadow:
+        0 2px 0 #7F0000,
+        0 4px 10px rgba(255, 215, 0, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+#splash-start-btn:focus-visible {
+    outline: 4px solid #4FC3F7;
+    outline-offset: 4px;
+}
+
+/* Dica de teclado — pisca suave */
+#splash-hint {
+    font-size: clamp(8px, 1.2vw, 12px);
+    color: rgba(255, 255, 255, 0.7);
+    animation: hintBlink 1.5s ease-in-out infinite;
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* Transição de saída (aplicada via JS: classList.add('hide')) */
+#splash-screen.hide {
+    opacity: 0;
+    transform: scale(1.1);
+    pointer-events: none;
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s ease;
+}
+
+/* ========================================================
+   KEYFRAMES
+======================================================== */
+
+/* Título: entrada com bounce elástico */
+@keyframes titleBounce {
+    0% {
+        transform: scale(0) translateY(-50px);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.1) translateY(10px);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Título: flutuação contínuas após o bounce */
+@keyframes titleFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Subtítulo: fade in suave de baixo para cima */
+@keyframes subtitleFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botão: entrada com scale */
+@keyframes buttonEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Botão: pulso do glow dourado */
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow:
+            0 6px 0 #7F0000,
+            0 8px 20px rgba(255, 215, 0, 0.4),
+            inset 0 2px 0 rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        box-shadow:
+            0 6px 0 #7F0000,
+            0 8px 40px rgba(255, 215, 0, 0.9),
+            inset 0 2px 0 rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Hint: piscada suave */
+@keyframes hintBlink {
+    0%, 100% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ========================================================
+   RESPONSIVO
+======================================================== */
+@media (max-width: 700px) {
+    #splash-title {
+        text-shadow:
+            3px 3px 0 #D32F2F,
+            4px 4px 0 #7F0000,
+            0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    #splash-start-btn {
+        padding: 16px 32px;
+        border-width: 3px;
+        border-radius: 10px;
+    }
+
+    #splash-start-btn .btn-icon {
+        font-size: 14px;
+    }
+
+    #splash-content {
+        gap: 16px;
+    }
+}
